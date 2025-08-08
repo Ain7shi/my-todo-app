@@ -14,4 +14,8 @@ Node.js is a JavaScript runtime that allows you to run JavaScript outside of a w
 
 -Download my-todo-app zip file and unzip it your desired destination.
 
--Open Visual Studio perform a ctrl + K + O, and open
+-Open Visual Studio perform a ctrl + K + O, and a terminal.
+
+-Run `npm install react-bootstrap bootstrap` as bootstrap in required but not automatically installed.
+
+
