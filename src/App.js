@@ -1,34 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import TodoItem from './TodoItem';
 import AddTodoForm from './AddTodoForm';
 import './App.css';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 function App() {
   const [todos, setTodos] = useState([]);
-  const [nextId, setNextId] = useState(1);
+  const [nextId, setNextId] = useState();
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [show, setShow] = useState(false);
+
+  const [editingTodo, setEditingTodo] = useState(null);
+  const [editText, setEditText] = useState('');
+  const handleClose = () => setShow(false);
+  const handleShow = (todo) => {setEditingTodo(todo); setEditText(todo.text) ;setShow(true);};
+  
+  // console.log(editText);
   // Load todos from localStorage on component mount
   useEffect(() => {
-    const savedTodos = localStorage.getItem('todos');
+    const savedTodos = localStorage.getItem('todos'); 
     const savedNextId = localStorage.getItem('nextId');
-
-    if (savedTodos) {
-      setTodos(JSON.parse(savedTodos));
-    } 
-    // else {
-    
-    // setTodos([
-    //   { id: 1, text: 'Learn React basics', completed: false },
-    //   { id: 2, text: 'Build a TODO app', completed: false },
-    //   { id: 3, text: 'Master React hooks', completed: false }
-    // ]);
-    // setNextId(4);
-    // }
-
-    if (savedNextId) {
-      setNextId(parseInt(savedNextId));
+    if (savedTodos) { 
+      setTodos(JSON.parse(savedTodos)); 
     }
+    if (savedNextId) { 
+      setNextId(parseInt(savedNextId)); 
+    } 
   }, []); // Empty dependency array means this runs once on mount
 
   // Save todos to localStorage whenever todos change
@@ -40,7 +39,9 @@ function App() {
 
     // Save nextId to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('nextId', nextId.toString());
+    if (nextId > 0){
+      localStorage.setItem('nextId', nextId.toString()); 
+    }
   }, [nextId]);
 
   const addTodo = (text, prio, due) => {
@@ -55,10 +56,6 @@ function App() {
     setNextId(nextId + 1);
   };
 
-  // todos.forEach(todo => {
-  // console.log(todo.due);
-  // });
-
   const toggleTodo = (id) => {
     setTodos(todos.map(todo =>
     todo.id === id ? { ...todo, completed: !todo.completed } : todo
@@ -66,14 +63,22 @@ function App() {
   };
 
   const deleteTodo = (id) => {
-    if(todos.length >= 1){localStorage.clear();}
-    setTodos(todos.filter(todo => todo.id !== id));
-    // const updatedTodos = todos.filter  (todo => todo.id !== id);
-    // setTodos(updatedTodos)
-    // localStorage.setItem('todos', JSON.stringify(updatedTodos))
+    const delTodos = todos.filter(todo => todo.id !== id);
+    setTodos(delTodos);
+    localStorage.setItem('todos', JSON.stringify(delTodos));
+    // setTodos(todos.filter(todo => todo.id !== id));
   };
   
-  
+  const editTodo = (e) => {
+    e.preventDefault();
+    if (editText.trim() !== ""){
+      const editTodos = todos.map(todo=> 
+        todo.id === editingTodo.id ? {...todo, text: editText} : todo
+      );
+      setTodos(editTodos);
+    }
+    setShow(false);
+  };
 
   return (
     <div className="App">
@@ -83,7 +88,7 @@ function App() {
 
       <main>
         <AddTodoForm onAddTodo={addTodo} />
-        <form>
+        <form id="editModal">
           <input
             type="text"
             value={searchTerm}
@@ -105,6 +110,7 @@ function App() {
         todo={todo}
         onToggle={toggleTodo}
         onDelete={deleteTodo}
+        onHandleShow={() => handleShow(todo)}
         />
         ))}
         </ul>
@@ -112,6 +118,35 @@ function App() {
         <div className="todo-stats">
           <p>Total: {todos.length} | Completed: {todos.filter(t => t.completed).length}</p>
         </div>
+        <form>
+          <Modal
+            show={show}
+            onHide={handleClose}
+            backdrop="static"
+            keyboard={false}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Edit Todo</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <div>
+                <input
+                id="update"
+                type="text"
+                className=""
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                />
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              {/* <Button variant="secondary" onClick={handleClose}>
+                Close
+              </Button> */}
+              <Button variant="primary" form="editModal" onClick={editTodo}>Update</Button>
+            </Modal.Footer>
+          </Modal>
+        </form>
       </main>
     </div>
   );

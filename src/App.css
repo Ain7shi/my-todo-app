@@ -127,3 +127,21 @@ App {
   font-style: italic;
   margin: 40px 0;
 }
+
+.modal {
+  justify-content: center;
+  align-items: center;
+  z-index: 3;
+}
+
+.hidden {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+
+#update {
+  width: 100%;
+}
