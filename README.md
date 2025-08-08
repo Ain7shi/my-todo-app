@@ -30,4 +30,8 @@ Node.js is a JavaScript runtime that allows you to run JavaScript outside of a w
 
 -Color coded list depending on Priority Level and Overdue due dates.
 
+-Search bar for finding specific tasks on the list.
+
 -Warning user about due dates.
+
+-CSS and Design to be updated in the future
